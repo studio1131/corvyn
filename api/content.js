@@ -59,7 +59,8 @@ export default async function handler(req, res) {
     }
 
     const { result: articles = [] } = await articlesRes.json();
-    const { result: settings = {} } = await settingsRes.json();
+    const { result: rawSettings } = await settingsRes.json();
+    const settings = rawSettings || {};
 
     res.status(200).json({
       articles,
