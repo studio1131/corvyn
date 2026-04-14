@@ -929,7 +929,7 @@ footer{border-top:1px solid var(--b1)}
 
   function genEtList(posts) {
     return posts.map(function (p, i) {
-      return '<div class="et-list-item" data-post="' + i + '">' +
+      return '<div class="et-list-item" data-post="' + i + '" data-cat="' + esc(p.filterTag || '') + '">' +
         '<span class="et-list-n">' + esc(p.num || pad(i + 1)) + '</span>' +
         '<span class="et-list-title">' + esc(p.title) + '</span>' +
         '<span class="et-list-cat">' + esc(p.cat) + '</span>' +
@@ -1076,6 +1076,34 @@ footer{border-top:1px solid var(--b1)}
       }
     }
   }
+
+  /* ─── Category filter ────────────────────────────────────────────── */
+  (function () {
+    var filterBar = document.querySelector('.filter-bar');
+    if (!filterBar) return;
+    filterBar.addEventListener('click', function (e) {
+      var btn = e.target.closest('.flt');
+      if (!btn) return;
+      filterBar.querySelectorAll('.flt').forEach(function (b) { b.classList.remove('on'); });
+      btn.classList.add('on');
+      var filt = btn.getAttribute('data-filt') || 'tous';
+      // Grid cards
+      document.querySelectorAll('#et-grid .et-card').forEach(function (el) {
+        var cat = el.getAttribute('data-cat') || '';
+        el.style.display = (filt === 'tous' || cat === filt) ? '' : 'none';
+      });
+      // List items
+      document.querySelectorAll('#et-list .et-list-item').forEach(function (el) {
+        var cat = el.getAttribute('data-cat') || '';
+        if (!cat) {
+          var idx = parseInt(el.getAttribute('data-post'), 10);
+          var post = window.__CORVYN_POSTS && window.__CORVYN_POSTS[idx];
+          cat = (post && post.filterTag) ? post.filterTag : '';
+        }
+        el.style.display = (filt === 'tous' || cat === filt) ? '' : 'none';
+      });
+    });
+  })();
 
   /* ─── Fetch from /api/content ─────────────────────────────────────── */
   // Update post cover image when an article is opened
