@@ -953,9 +953,15 @@ footer{border-top:1px solid var(--b1)}
     }).join('');
   }
 
-  // Featured article (post 0)
+  // Featured article (post 0) — image LEFT (.feat-img), text RIGHT (2-col .feat-grid CSS)
   function genFeatured(p) {
-    return '<div>' +
+    var imgCol = p.imageUrl
+      ? '<div class="feat-img">' +
+          '<div class="feat-in"><img src="' + esc(p.imageUrl) + '" alt="" loading="lazy"></div>' +
+          '<div class="feat-badge">' + esc(p.num || '001') + '</div>' +
+        '</div>'
+      : '';
+    var textCol = '<div>' +
       '<div style="display:flex;justify-content:space-between;margin-bottom:10px;">' +
       '<span class="feat-cat">' + esc(p.cat) + '</span>' +
       '<span style="font-family:var(--mono);font-size:9px;color:var(--s15);">' + esc(p.num || '001') + '</span>' +
@@ -965,8 +971,9 @@ footer{border-top:1px solid var(--b1)}
       '<div class="feat-meta"><span>' + esc(p.date) + '</span><div class="mdot"></div>' +
       '<span>' + esc(p.read) + '</span><div class="mdot"></div>' +
       '<span>' + esc(p.cat) + '</span></div>' +
-      '<button class="read-btn" data-post="0">Lire l\'étude →</button>' +
+      '<button class="read-btn" data-post="0">Lire l'\u00e9tude \u2192</button>' +
       '</div>';
+    return imgCol + textCol;
   }
 
   /* ─── Services accordion ──────────────────────────────────────────── */
@@ -1072,24 +1079,6 @@ footer{border-top:1px solid var(--b1)}
 
   /* ─── Fetch from /api/content ─────────────────────────────────────── */
   // Update post cover image when an article is opened
-  document.addEventListener('click', function (e) {
-    var el = e.target.closest('[data-post]');
-    if (!el) return;
-    var idx = parseInt(el.getAttribute('data-post'), 10);
-    var posts = window.__CORVYN_POSTS;
-    if (!posts || !posts[idx]) return;
-    var coverEl  = document.getElementById('post-cover');
-    var coverImg = document.getElementById('post-cover-img');
-    if (!coverEl || !coverImg) return;
-    if (posts[idx].imageUrl) {
-      coverImg.src = posts[idx].imageUrl;
-      coverImg.alt = posts[idx].title || '';
-      coverEl.style.display = '';
-    } else {
-      coverEl.style.display = 'none';
-    }
-  });
-
   fetch('/api/content')
     .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
     .then(function (data) {
