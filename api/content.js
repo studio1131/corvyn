@@ -43,7 +43,7 @@ const SETTINGS_QUERY = encodeURIComponent(`
 `.trim());
 
 export default async function handler(req, res) {
-  res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
+  res.setHeader('Cache-Control', 's-maxage=0, must-revalidate');
 
   const token = process.env.SANITY_API_TOKEN;
   const headers = { 'Content-Type': 'application/json' };
