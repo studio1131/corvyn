@@ -26,7 +26,8 @@ const ARTICLES_QUERY = encodeURIComponent(`
     excerpt,
     publishedDate,
     readingTime,
-    body
+    body,
+    "coverImageRef": coverImage.asset._ref
   }
 `.trim());
 
@@ -58,9 +59,15 @@ export default async function handler(req, res) {
       throw new Error(`Sanity API error: ${articlesRes.status} / ${settingsRes.status}`);
     }
 
-    const { result: articles = [] } = await articlesRes.json();
+    const { result: rawArticles = [] } = await articlesRes.json();
     const { result: rawSettings } = await settingsRes.json();
     const settings = rawSettings || {};
+
+    // Compute cover image URLs server-side and strip the raw ref
+    const articles = rawArticles.map(({ coverImageRef, ...a }) => ({
+      ...a,
+      coverImageUrl: sanityImageUrl(coverImageRef, 1200)
+    }));
 
     res.status(200).json({
       articles,

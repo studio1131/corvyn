@@ -48,6 +48,13 @@ export default {
       description: 'Ex : 7 min'
     },
     {
+      name: 'coverImage',
+      title: 'Image de couverture',
+      type: 'image',
+      options: { hotspot: true },
+      description: "Affichée en tête de la carte et en haut de l'article."
+    },
+    {
       name: 'body',
       title: "Corps de l'article",
       type: 'array',
