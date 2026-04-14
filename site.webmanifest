@@ -1,0 +1,8 @@
+{
+  "name": "CORVYN Studio",
+  "short_name": "CORVYN",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060607",
+  "theme_color": "#060607"
+}

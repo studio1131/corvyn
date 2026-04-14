@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://corvyn.studio/sitemap.xml
