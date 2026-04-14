@@ -248,10 +248,74 @@ footer{border-top:1px solid var(--b1)}
   .hero-bot{grid-template-columns:1fr}.hero-br{border-left:none;border-top:1px solid rgba(240,237,230,.1)}
   .page-intro-safe{max-width:100%!important}
 }
-@media(max-width:600px){
-  .g3{grid-template-columns:1fr}.g4{grid-template-columns:1fr}
-  .nav-links{display:none}
-  .hn-c{font-size:clamp(24px,8vw,52px)}
+/* MOBILE NAVIGATION */
+.nav-burger{display:none;flex-direction:column;justify-content:center;gap:5px;background:none;border:none;cursor:pointer;padding:6px;z-index:202;flex-shrink:0}
+.nav-burger span{display:block;width:22px;height:1px;background:var(--snow);transition:transform .35s cubic-bezier(.16,1,.3,1),opacity .25s}
+body.nav-open .nav-burger span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+body.nav-open .nav-burger span:nth-child(2){opacity:0;transform:scaleX(0)}
+body.nav-open .nav-burger span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.nav-overlay{display:none;position:fixed;inset:0;z-index:201;background:rgba(6,6,7,.97);backdrop-filter:blur(24px);flex-direction:column;align-items:center;justify-content:center;gap:0;animation:pin .4s cubic-bezier(.16,1,.3,1) both}
+body.nav-open .nav-overlay{display:flex}
+.nav-overlay-links{list-style:none;width:100%;text-align:center}
+.nav-overlay-links li{border-bottom:1px solid var(--b1)}
+.nav-overlay-links li:first-child{border-top:1px solid var(--b1)}
+.nav-overlay-links a{display:block;font-family:var(--disp);font-weight:700;font-size:clamp(28px,9vw,52px);text-transform:uppercase;letter-spacing:-.02em;color:var(--s35);cursor:pointer;padding:clamp(16px,4vh,26px) 0;transition:color .2s,padding-left .2s}
+.nav-overlay-links a:hover,.nav-overlay-links a.act{color:var(--snow);padding-left:8px}
+.nav-overlay-cta{margin-top:clamp(28px,5vh,44px);font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--bg);background:var(--snow);padding:14px 32px;cursor:pointer;border:none;transition:background .25s}
+.nav-overlay-cta:hover{background:var(--chr)}
+@media(max-width:768px){
+  /* Cursor — touch devices have no pointer */
+  #cur-d,#cur-r{display:none}
+  body{cursor:auto}
+  /* Nav */
+  .nav-burger{display:flex}
+  .nav-links,.nav-cta,.nav-loc{display:none}
+  /* Hero */
+  #hero{min-height:100svh}
+  .hn-c,.hn-s{font-size:clamp(38px,11vw,72px)}
+  .hero-bot{grid-template-columns:1fr}
+  .hero-br{border-left:none;border-top:1px solid rgba(240,237,230,.1)}
+  .hb-svc li{font-size:12px}
+  /* About */
+  .about-wrap{grid-template-columns:1fr}
+  .about-side{display:none}
+  /* Services */
+  .svc-split{grid-template-columns:1fr}
+  .svc-photo{min-height:220px;order:-1}
+  .svc-photo::after{background:linear-gradient(to bottom,transparent 55%,var(--bg))}
+  /* Grids */
+  .g2{grid-template-columns:1fr}
+  .g3{grid-template-columns:1fr}
+  .g4{grid-template-columns:1fr 1fr}
+  /* Featured article */
+  .feat-grid{grid-template-columns:1fr;gap:clamp(16px,3vw,28px)}
+  /* Footer */
+  .footer-grid{grid-template-columns:1fr}
+  .footer-bot{flex-direction:column;align-items:flex-start;gap:8px}
+  /* Filter bar */
+  .filter-bar{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}
+  .flt{white-space:nowrap;flex-shrink:0}
+  /* List view */
+  .et-list-item{gap:8px}
+  .et-list-cat{display:none}
+  /* Post */
+  .post-end{flex-direction:column;align-items:flex-start}
+  /* Contact */
+  .g2.contact-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .g4{grid-template-columns:1fr}
+  .hero-bot{display:none}
+  .hb-tagline{font-size:13px}
+  .platform-row{flex-direction:column}
+  .platform{width:100%;justify-content:center}
+  /* View toggle labels */
+  .vbtn{padding:8px 10px;font-size:8px}
+}
+/* Touch devices: never show custom cursor regardless of screen size */
+@media(hover:none){
+  #cur-d,#cur-r{display:none!important}
+  body{cursor:auto!important}
 }
 
 .et-list{display:none;flex-direction:column;gap:0}
@@ -306,7 +370,21 @@ footer{border-top:1px solid var(--b1)}
     <li><a data-page="contact">Contact</a></li>
   </ul>
   <button class="nav-cta" data-page="contact">Initier un projet</button>
+  <button class="nav-burger" id="nav-burger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<!-- MOBILE NAV OVERLAY -->
+<div class="nav-overlay" id="nav-overlay">
+  <ul class="nav-overlay-links">
+    <li><a data-page="home">Manifeste</a></li>
+    <li><a data-page="about">À propos</a></li>
+    <li><a data-page="services">Services</a></li>
+    <li><a data-page="etudes">Études</a></li>
+    <li><a data-page="contact">Contact</a></li>
+  </ul>
+  <button class="nav-overlay-cta" data-page="contact">Initier un projet</button>
+</div>
 
 <!-- HOME -->
 <div class="page on" id="page-home">
@@ -666,9 +744,9 @@ footer{border-top:1px solid var(--b1)}
     document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('on'); });
     var target=document.getElementById('page-'+name) || document.getElementById('page-home');
     target.classList.add('on');
-    document.querySelectorAll('.nav-links a').forEach(function(a){ a.classList.remove('act'); });
-    var current=document.querySelector('.nav-links a[data-page="'+name+'"]');
-    if(current) current.classList.add('act');
+    document.querySelectorAll('.nav-links a, .nav-overlay-links a').forEach(function(a){ a.classList.remove('act'); });
+    document.querySelectorAll('.nav-links a[data-page="'+name+'"], .nav-overlay-links a[data-page="'+name+'"]').forEach(function(a){ a.classList.add('act'); });
+    body.classList.remove('nav-open');
     window.scrollTo({top:0,behavior:'auto'});
     initReveal();
   }
@@ -698,6 +776,33 @@ footer{border-top:1px solid var(--b1)}
   // Nav scroll
   window.addEventListener('scroll', function(){
     if(nav) nav.classList.toggle('stuck', window.scrollY>50);
+  });
+
+  // Hamburger menu
+  var burger = document.getElementById('nav-burger');
+  var overlay = document.getElementById('nav-overlay');
+  function closeNav() { body.classList.remove('nav-open'); }
+  if(burger) {
+    burger.addEventListener('click', function() {
+      body.classList.toggle('nav-open');
+    });
+  }
+  if(overlay) {
+    overlay.addEventListener('click', function(e) {
+      var link = e.target.closest('[data-page]');
+      if(link) { closeNav(); showPage(link.getAttribute('data-page')); }
+    });
+    // Sync .act class in overlay
+    overlay.querySelectorAll('[data-page]').forEach(function(a) {
+      a.addEventListener('click', function() {
+        overlay.querySelectorAll('a').forEach(function(x) { x.classList.remove('act'); });
+        if(a.tagName === 'A') a.classList.add('act');
+      });
+    });
+  }
+  // Close overlay when main nav link clicked
+  document.querySelectorAll('.nav-links a, .nav-cta').forEach(function(el) {
+    el.addEventListener('click', closeNav);
   });
 
   // Reveal
