@@ -1,0 +1,8 @@
+{
+  "name": "corvyn-studio",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "hash": "node scripts/hash-assets.mjs"
+  }
+}
