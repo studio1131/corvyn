@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 const WINDOW_MS = 10 * 60 * 1000;
 const MAX_PER_WINDOW = 5;
 const store = globalThis.__corvynRateLimit || (globalThis.__corvynRateLimit = new Map());
@@ -52,7 +54,7 @@ export default async function handler(req, res) {
     company: sanitize(company, 180),
     message: sanitize(message, 5000),
     submittedAt: new Date().toISOString(),
-    ipHashHint: Buffer.from(ip).toString('base64').slice(0, 24),
+    ipHash: crypto.createHash('sha256').update(ip + (process.env.IP_HASH_SALT || 'corvyn')).digest('hex').slice(0, 16),
   };
 
   if (!clean.name || !clean.email || !clean.message) return json(res, 400, { error: 'missing_fields' });
@@ -85,8 +87,7 @@ export default async function handler(req, res) {
   });
 
   if (!sanityRes.ok) {
-    const text = await sanityRes.text();
-    return json(res, 502, { error: 'sanity_write_failed', detail: text.slice(0, 400) });
+    return json(res, 502, { error: 'sanity_write_failed' });
   }
 
   return json(res, 200, { ok: true });

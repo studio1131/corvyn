@@ -866,7 +866,7 @@ body.nav-open .nav-overlay{display:flex}
     document.getElementById('post-cat').textContent=p.cat;
     document.getElementById('post-title').textContent=p.title;
     document.getElementById('post-meta').innerHTML='<span>'+p.date+'</span><span style="display:inline-block;width:3px;height:3px;border-radius:50%;background:var(--b2);margin:0 12px;vertical-align:middle;"></span><span>'+p.read+' de lecture</span>';
-    document.getElementById('post-body').innerHTML=p.body;
+    document.getElementById('post-body').innerHTML=sanitizeHtml(p.body || '');
     var nx=POSTS[(i+1)%POSTS.length];
     document.getElementById('post-next').textContent='Prochaine — '+nx.title.substring(0,52)+'…';
     showPage('post');
@@ -884,7 +884,7 @@ body.nav-open .nav-overlay{display:flex}
     document.getElementById('post-cat').textContent=p.cat;
     document.getElementById('post-title').textContent=p.title;
     document.getElementById('post-meta').innerHTML='<span>'+p.date+'</span><span style="display:inline-block;width:3px;height:3px;border-radius:50%;background:var(--b2);margin:0 12px;vertical-align:middle;"></span><span>'+p.read+' de lecture</span>';
-    document.getElementById('post-body').innerHTML=p.body;
+    document.getElementById('post-body').innerHTML=sanitizeHtml(p.body || '');
     var nx=POSTS[(i+1)%POSTS.length];
     document.getElementById('post-next').textContent='Prochaine — '+nx.title.substring(0,52)+'…';
     showPage('post');
@@ -986,6 +986,38 @@ body.nav-open .nav-overlay{display:flex}
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
+  }
+
+  /* ─── HTML sanitizer for post body (allowlist) ───────────────────── */
+  function sanitizeHtml(html) {
+    var allowed = {
+      p: [], strong: [], em: [], h2: [], blockquote: [], br: []
+    };
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    function clean(node) {
+      var toRemove = [];
+      node.childNodes.forEach(function(child) {
+        if (child.nodeType === 3) return; // text node — keep
+        if (child.nodeType !== 1) { toRemove.push(child); return; }
+        var tag = child.tagName.toLowerCase();
+        if (!allowed.hasOwnProperty(tag)) {
+          // Replace disallowed element with its text content
+          var text = document.createTextNode(child.textContent);
+          child.parentNode.insertBefore(text, child);
+          toRemove.push(child);
+          return;
+        }
+        // Strip all attributes from allowed tags
+        while (child.attributes.length > 0) {
+          child.removeAttribute(child.attributes[0].name);
+        }
+        clean(child);
+      });
+      toRemove.forEach(function(n) { if (n.parentNode) n.parentNode.removeChild(n); });
+    }
+    clean(div);
+    return div.innerHTML;
   }
 
   function renderMarks(child) {

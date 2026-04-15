@@ -43,6 +43,11 @@ const SETTINGS_QUERY = encodeURIComponent(`
 `.trim());
 
 export default async function handler(req, res) {
+  if (req.method !== 'GET') {
+    res.setHeader('Allow', 'GET');
+    res.status(405).json({ error: 'method_not_allowed' });
+    return;
+  }
   res.setHeader('Cache-Control', 's-maxage=0, must-revalidate');
 
   const token = process.env.SANITY_API_TOKEN;
