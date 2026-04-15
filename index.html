@@ -853,6 +853,29 @@ body.nav-open .nav-overlay{display:flex}
     vlist.addEventListener('click', function(){ vlist.classList.add('on'); vgrid.classList.remove('on'); etGrid.style.display='none'; etList.style.display='flex'; });
   }
 
+  // HTML sanitizer — allowlist: p, strong, em, h2, blockquote, br
+  function sanitizeHtml(html) {
+    var allowed = { p:1, strong:1, em:1, h2:1, blockquote:1, br:1 };
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    (function clean(node) {
+      var toRemove = [];
+      node.childNodes.forEach(function(child) {
+        if (child.nodeType === 3) return;
+        if (child.nodeType !== 1) { toRemove.push(child); return; }
+        if (!allowed[child.tagName.toLowerCase()]) {
+          node.insertBefore(document.createTextNode(child.textContent), child);
+          toRemove.push(child);
+          return;
+        }
+        while (child.attributes.length) child.removeAttribute(child.attributes[0].name);
+        clean(child);
+      });
+      toRemove.forEach(function(n) { if (n.parentNode) n.parentNode.removeChild(n); });
+    })(div);
+    return div.innerHTML;
+  }
+
   // Posts
   var POSTS=window.__CORVYN_POSTS=[{cat:'Identité',title:'Pourquoi les marques qui durent ont toujours un ennemi clairement défini',date:'Mars 2026',read:'7 min',body:"<p class='dc'>Il existe une distinction que la plupart des consultants en branding ne font jamais — parce qu'elle est inconfortable. La différence entre une marque qui se positionne et une marque qui prend position. Les deux semblent similaires. Elles ne le sont absolument pas.</p><p>Se positionner, c'est choisir un endroit sur une carte. Prendre position, c'est décider ce que l'on refuse. La première est une décision marketing. La seconde est une décision de caractère. Et le caractère, contrairement au positionnement, ne se copie pas.</p><h2>Ce que Chanel a compris</h2><p>Gabrielle Chanel n'a pas construit une marque contre la concurrence. Elle a construit une marque contre une époque. L'ennemi n'était pas Poiret ou Worth — c'était la corseterie, la contrainte physique imposée au corps féminin. Cet ennemi était tellement précis, tellement ancré dans une vérité culturelle, que quatre-vingts ans après sa mort, la marque tient encore.</p><p>La question à poser n'est pas <strong>« qui est notre concurrent ? »</strong> mais <strong>« qu'est-ce que nous refusons ? »</strong> Ce refus, s'il est sincère, génère automatiquement une attraction pour ceux qui le partagent.</p><blockquote>La rareté d'une marque ne vient pas de son prix. Elle vient de la précision absolue de ce qu'elle refuse d'être.</blockquote><h2>La mécanique de l'ennemi</h2><p>Un ennemi de marque ne doit jamais être une personne. C'est une idée. Apple n'a pas attaqué IBM — elle a attaqué la conformité. Nike n'a pas attaqué Adidas — elle a attaqué l'inertie. <strong>Une marque sans ennemi est une marque sans point de vue. Et une marque sans point de vue est invisible.</strong></p>"},
 {cat:'Luxe & désir',title:'Ce que les maisons de luxe ont compris sur le silence',date:'Mars 2026',read:'5 min',body:"<p class='dc'>Il y a une chose que toutes les grandes maisons de luxe font systématiquement et que la quasi-totalité des marques premium ne font que rarement — elles ne répondent pas. Pas toujours. Pas immédiatement. Parfois, pas du tout. Ce silence n'est pas une négligence. C'est une architecture délibérée.</p><h2>La grammaire du désir</h2><p>Le désir se construit dans l'espace entre la présence et l'absence. Quand une marque est partout — tous les réseaux, tous les jours — elle cesse d'être désirable pour devenir disponible. Et ce qui est disponible n'est jamais précieux.</p><p>Hermès ne fait pas de soldes. Ce n'est pas uniquement une stratégie de marge — c'est une déclaration sur la nature de l'objet. Ce refus, répété pendant des décennies, a construit une croyance collective dans la valeur de l'objet.</p><blockquote>Ce qui peut s'expliquer n'a plus besoin d'être désiré. Le luxe opère précisément dans l'espace où l'explication n'est pas bienvenue.</blockquote><h2>L'économie de l'attention rare</h2><p>Dans un monde d'hyperstimulation, la rareté de l'attention est devenue une forme de luxe en soi. <strong>La fréquence n'est pas un signe de vitalité — c'est souvent un signe d'anxiété.</strong></p>"},
@@ -986,38 +1009,6 @@ body.nav-open .nav-overlay{display:flex}
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
-  }
-
-  /* ─── HTML sanitizer for post body (allowlist) ───────────────────── */
-  function sanitizeHtml(html) {
-    var allowed = {
-      p: [], strong: [], em: [], h2: [], blockquote: [], br: []
-    };
-    var div = document.createElement('div');
-    div.innerHTML = html;
-    function clean(node) {
-      var toRemove = [];
-      node.childNodes.forEach(function(child) {
-        if (child.nodeType === 3) return; // text node — keep
-        if (child.nodeType !== 1) { toRemove.push(child); return; }
-        var tag = child.tagName.toLowerCase();
-        if (!allowed.hasOwnProperty(tag)) {
-          // Replace disallowed element with its text content
-          var text = document.createTextNode(child.textContent);
-          child.parentNode.insertBefore(text, child);
-          toRemove.push(child);
-          return;
-        }
-        // Strip all attributes from allowed tags
-        while (child.attributes.length > 0) {
-          child.removeAttribute(child.attributes[0].name);
-        }
-        clean(child);
-      });
-      toRemove.forEach(function(n) { if (n.parentNode) n.parentNode.removeChild(n); });
-    }
-    clean(div);
-    return div.innerHTML;
   }
 
   function renderMarks(child) {
