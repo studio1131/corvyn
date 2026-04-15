@@ -763,15 +763,7 @@ body.nav-open .nav-overlay{display:flex}
       showPage('home');
     }
   });
-  document.addEventListener('keydown', function(e){
-    if(e.key==='Enter' || e.key===' ' || e.key==='Escape'){
-      hideLang();
-      showPage('home');
-    }
-  });
-  setTimeout(function(){
-    if(lang && getComputedStyle(lang).display !== 'none'){ hideLang(); showPage('home'); }
-  }, 2600);
+
 
   // Nav scroll
   window.addEventListener('scroll', function(){
@@ -993,7 +985,6 @@ body.nav-open .nav-overlay{display:flex}
   }
 
   // Ensure home visible and title split even before language close
-  showPage('home');
 })();
 </script>
 
