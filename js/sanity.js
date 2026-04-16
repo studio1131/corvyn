@@ -104,6 +104,24 @@
     return imgCol + textCol;
   }
 
+  /* ─── Audio tracks ────────────────────────────────────────────────── */
+  function genTracks(tracks) {
+    var classes = ['rv', 'rv d1', 'rv d2', 'rv d3', 'rv d4'];
+    return tracks.map(function (t, i) {
+      var playAttr = t.audioUrl
+        ? ' data-audio="' + esc(t.audioUrl) + '"'
+        : '';
+      return '<div class="track ' + (classes[i] || 'rv') + '"' + playAttr + '>' +
+        '<div class="track-play">▶</div>' +
+        '<div class="track-info">' +
+          '<div class="track-title">' + esc(t.title) + '</div>' +
+          '<div class="track-sub">' + esc(t.subtitle || 'CORVYN Studio') + '</div>' +
+        '</div>' +
+        '<div class="track-dur">' + esc(t.duration || '') + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
   /* ─── Services accordion ──────────────────────────────────────────── */
   function attachAccordion(list) {
     if (!list) return;
@@ -202,6 +220,14 @@
         }).join('');
         attachAccordion(svcList);
       }
+    }
+
+    /* --- Audio tracks --- */
+    if (settings.audioTracks && settings.audioTracks.length) {
+      var trackHtml = genTracks(settings.audioTracks);
+      document.querySelectorAll('.track-list').forEach(function (el) {
+        el.innerHTML = trackHtml;
+      });
     }
   }
 

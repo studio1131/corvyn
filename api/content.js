@@ -8,12 +8,23 @@ const API_BASE = `https://${PROJECT_ID}.api.sanity.io/v2023-10-01/data/query/${D
  */
 function sanityImageUrl(ref, width) {
   if (!ref || typeof ref !== 'string') return null;
-  // ref = "image-abc123def-1920x1080-jpg"
   const match = ref.match(/^image-([a-f0-9]+)-(\d+x\d+)-(\w+)$/);
   if (!match) return null;
   const [, id, dims, ext] = match;
   const base = `https://cdn.sanity.io/images/${PROJECT_ID}/${DATASET}/${id}-${dims}.${ext}`;
   return width ? `${base}?w=${width}&auto=format` : base;
+}
+
+/**
+ * Build a Sanity CDN file URL from an asset _ref string.
+ * Ref format: "file-{id}-{ext}"
+ */
+function sanityFileUrl(ref) {
+  if (!ref || typeof ref !== 'string') return null;
+  const match = ref.match(/^file-([a-zA-Z0-9]+)-(\w+)$/);
+  if (!match) return null;
+  const [, id, ext] = match;
+  return `https://cdn.sanity.io/files/${PROJECT_ID}/${DATASET}/${id}.${ext}`;
 }
 
 const ARTICLES_QUERY = encodeURIComponent(`
@@ -38,6 +49,13 @@ const SETTINGS_QUERY = encodeURIComponent(`
     services[] {
       name,
       description
+    },
+    audioTracks[] {
+      title,
+      subtitle,
+      duration,
+      "audioFileRef": audioFile.asset._ref,
+      externalUrl
     }
   }
 `.trim());
@@ -74,19 +92,27 @@ export default async function handler(req, res) {
       coverImageUrl: sanityImageUrl(coverImageRef, 1200)
     }));
 
+    const audioTracks = (settings.audioTracks || []).map(t => ({
+      title:       t.title || '',
+      subtitle:    t.subtitle || '',
+      duration:    t.duration || '',
+      audioUrl:    sanityFileUrl(t.audioFileRef) || t.externalUrl || null
+    }));
+
     res.status(200).json({
       articles,
       settings: {
-        heroImageUrl: sanityImageUrl(settings.heroImageRef, 2400),
+        heroImageUrl:     sanityImageUrl(settings.heroImageRef, 2400),
         servicesImageUrl: sanityImageUrl(settings.servicesImageRef, 1600),
-        services: settings.services || []
+        services:         settings.services || [],
+        audioTracks
       }
     });
   } catch (err) {
     // Return empty payload — site falls back to hardcoded content
     res.status(200).json({
       articles: [],
-      settings: { heroImageUrl: null, servicesImageUrl: null, services: [] },
+      settings: { heroImageUrl: null, servicesImageUrl: null, services: [], audioTracks: [] },
       _error: String(err.message)
     });
   }
