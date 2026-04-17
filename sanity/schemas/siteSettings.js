@@ -5,6 +5,13 @@ export default {
   __experimental_actions: ['update', 'publish'],
   fields: [
     {
+      name: 'faviconImage',
+      title: 'Favicon du site',
+      type: 'image',
+      options: { hotspot: false },
+      description: "Icône affichée dans les onglets de navigateur et les résultats Google. Utilisez une image carrée PNG ou SVG, minimum 512×512 px, fond uni de préférence."
+    },
+    {
       name: 'heroImage',
       title: "Image héro (page d'accueil)",
       type: 'image',

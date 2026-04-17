@@ -44,6 +44,7 @@ const ARTICLES_QUERY = encodeURIComponent(`
 
 const SETTINGS_QUERY = encodeURIComponent(`
   *[_type == "siteSettings"][0] {
+    "faviconRef": faviconImage.asset._ref,
     "heroImageRef": heroImage.asset._ref,
     "servicesImageRef": servicesImage.asset._ref,
     services[] {
@@ -102,6 +103,7 @@ export default async function handler(req, res) {
     res.status(200).json({
       articles,
       settings: {
+        faviconUrl:       sanityImageUrl(settings.faviconRef, 512),
         heroImageUrl:     sanityImageUrl(settings.heroImageRef, 2400),
         servicesImageUrl: sanityImageUrl(settings.servicesImageRef, 1600),
         services:         settings.services || [],

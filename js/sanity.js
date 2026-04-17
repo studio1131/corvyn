@@ -191,6 +191,21 @@
       }
     }
 
+    /* --- Favicon --- */
+    if (settings.faviconUrl) {
+      ['icon', 'apple-touch-icon'].forEach(function (rel) {
+        var el = document.querySelector('link[rel="' + rel + '"]');
+        if (el) {
+          el.href = settings.faviconUrl;
+        } else {
+          var link = document.createElement('link');
+          link.rel = rel;
+          link.href = settings.faviconUrl;
+          document.head.appendChild(link);
+        }
+      });
+    }
+
     /* --- Images --- */
     if (settings.heroImageUrl) {
       var heroImg = document.getElementById('hero-img');
