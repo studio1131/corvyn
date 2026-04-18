@@ -39,7 +39,9 @@ export default async function handler(req, res) {
     // fall through
   }
 
-  // No favicon configured yet
-  res.statusCode = 404;
+  // No favicon configured in Sanity — redirect to static SVG fallback
+  res.setHeader('Cache-Control', 'public, s-maxage=60');
+  res.setHeader('Location', '/favicon.svg');
+  res.statusCode = 302;
   res.end();
 }

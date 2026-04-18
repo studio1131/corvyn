@@ -193,17 +193,14 @@
 
     /* --- Favicon --- */
     if (settings.faviconUrl) {
-      ['icon', 'apple-touch-icon'].forEach(function (rel) {
-        var el = document.querySelector('link[rel="' + rel + '"]');
-        if (el) {
-          el.href = settings.faviconUrl;
-        } else {
-          var link = document.createElement('link');
-          link.rel = rel;
-          link.href = settings.faviconUrl;
-          document.head.appendChild(link);
-        }
-      });
+      // Replace the static SVG with the Sanity-managed image
+      var iconEl = document.querySelector('link[rel="icon"]');
+      if (iconEl) {
+        iconEl.type = 'image/png';
+        iconEl.href = settings.faviconUrl;
+      }
+      var appleEl = document.querySelector('link[rel="apple-touch-icon"]');
+      if (appleEl) appleEl.href = settings.faviconUrl;
     }
 
     /* --- Images --- */
