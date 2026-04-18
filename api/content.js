@@ -114,7 +114,7 @@ export default async function handler(req, res) {
     // Return empty payload — site falls back to hardcoded content
     res.status(200).json({
       articles: [],
-      settings: { heroImageUrl: null, servicesImageUrl: null, services: [], audioTracks: [] },
+      settings: { faviconUrl: null, heroImageUrl: null, servicesImageUrl: null, services: [], audioTracks: [] },
       _error: String(err.message)
     });
   }
