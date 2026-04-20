@@ -8,6 +8,6 @@ export default {
     { name: 'company', title: 'Company', type: 'string' },
     { name: 'message', title: 'Message', type: 'text', validation: Rule => Rule.required() },
     { name: 'submittedAt', title: 'Submitted At', type: 'datetime' },
-    { name: 'ipHashHint', title: 'IP Hash Hint', type: 'string' }
+    { name: 'ipHash', title: 'IP Hash', type: 'string' }
   ]
 };
