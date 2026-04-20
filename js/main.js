@@ -219,34 +219,58 @@
     if(el) openPost(parseInt(el.getAttribute('data-post'), 10));
   });
 
-  // Form - local safe mode
+  // Form
+  window.__formStartedAt = Date.now();
   var fs=document.getElementById('form-send');
   if(fs) fs.addEventListener('click', async function(){
-    var payload = {
-      name: document.getElementById('name') ? document.getElementById('name').value.trim() : '',
-      email: document.getElementById('email') ? document.getElementById('email').value.trim() : '',
-      company: document.getElementById('company') ? document.getElementById('company').value.trim() : '',
-      message: document.getElementById('message') ? document.getElementById('message').value.trim() : '',
-      website: '',
-      formStartedAt: window.__formStartedAt || Date.now()-5000
-    };
-    if(!payload.name || !payload.email || !payload.message){
-      alert('Merci de renseigner votre nom, votre email et votre message.');
+    function val(id){ var el=document.getElementById(id); return el ? el.value.trim() : ''; }
+    var name    = val('f-name');
+    var email   = val('f-email');
+    var q1      = val('f-q1');
+    var q2      = val('f-q2');
+    var q3      = val('f-q3');
+    var q4      = val('f-q4');
+    var message = [
+      q1 ? "01 — L'essence :\n" + q1 : '',
+      q2 ? "02 — L'ambition :\n" + q2 : '',
+      q3 ? "03 — L'obstacle :\n" + q3 : '',
+      q4 ? "04 — La décision :\n" + q4 : ''
+    ].filter(Boolean).join('\n\n');
+
+    if(!name || !email){
+      alert('Merci de renseigner votre nom et votre adresse e-mail (section 05).');
       return;
     }
+    if(!message){
+      alert('Merci de répondre à au moins une question avant d\'envoyer.');
+      return;
+    }
+
+    fs.disabled = true;
+    fs.textContent = 'Envoi…';
     try {
       var res = await fetch('/api/contact', {
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          company: '',
+          message: message,
+          website: '',
+          formStartedAt: window.__formStartedAt || Date.now()-5000
+        })
       });
-      if(!res.ok) throw new Error('request_failed');
-      alert('Message envoyé. Nous reviendrons vers vous sous 48h ouvrées.');
+      var data = await res.json();
+      if(!res.ok || (!data.ok && !data.mode)) throw new Error(data.error || 'request_failed');
+      fs.textContent = 'Envoyé ✓';
+      fs.style.opacity = '0.5';
     } catch(err) {
-      alert('Version locale ouverte. Le formulaire nécessite le backend Vercel pour envoyer réellement le message.');
+      fs.disabled = false;
+      fs.textContent = 'Soumettre →';
+      alert('Une erreur est survenue. Veuillez réessayer ou nous contacter directement.');
     }
   });
-  window.__formStartedAt = Date.now();
 
   // Hero letter pixel effect
   var introDone=false;
