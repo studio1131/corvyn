@@ -54,7 +54,7 @@ export default async function handler(req, res) {
     company: sanitize(company, 180),
     message: sanitize(message, 5000),
     submittedAt: new Date().toISOString(),
-    ipHash: crypto.createHash('sha256').update(ip + (process.env.IP_HASH_SALT || 'corvyn')).digest('hex').slice(0, 16),
+    ipHash: crypto.createHash('sha256').update(ip + (process.env.IP_HASH_SALT || '')).digest('hex').slice(0, 16),
   };
 
   if (!clean.name || !clean.email || !clean.message) return json(res, 400, { error: 'missing_fields' });
