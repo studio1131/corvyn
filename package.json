@@ -4,5 +4,8 @@
   "type": "module",
   "scripts": {
     "hash": "node scripts/hash-assets.mjs"
+  },
+  "dependencies": {
+    "@vercel/speed-insights": "^2.0.0"
   }
 }
