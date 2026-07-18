@@ -4,5 +4,8 @@
   "type": "module",
   "scripts": {
     "hash": "node scripts/hash-assets.mjs"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
   }
 }
